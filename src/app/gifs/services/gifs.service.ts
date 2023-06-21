@@ -1,10 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Gif, SearchResponse } from '../interfaces/gifs.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GifsService {
+  public gifList: Gif[] = [];
 
   private _tagsHistory: string[] = [];
   private apiKey: string = 'rOpUx3Yjx7FGO3gZ0CJuAEZmYtFLJsGg';
@@ -18,25 +20,28 @@ export class GifsService {
 
   private organizeHistory(tag: string): void {
     tag = tag.toLowerCase();
-    if ( this._tagsHistory.includes(tag)) {
-      this._tagsHistory = this._tagsHistory.filter(oldTag => oldTag !== tag);
+    if (this._tagsHistory.includes(tag)) {
+      this._tagsHistory = this._tagsHistory.filter((oldTag) => oldTag !== tag);
     }
 
     this._tagsHistory.unshift(tag);
 
-    this._tagsHistory = this._tagsHistory.splice(0,10);
-
+    this._tagsHistory = this._tagsHistory.splice(0, 10);
   }
 
-
-  searchTag( tag: string): void {
-    if ( tag.length ===0 ) return;
+  searchTag(tag: string): void {
+    if (tag.length === 0) return;
     this.organizeHistory(tag);
 
     const params = new HttpParams()
-    .set('api_key', this.apiKey)
-    .set('q', tag)
-    .set('limit', '10');
-    this.http.get(`${this.serviceUrl}/search`, {params}).subscribe(resp => console.log(resp))
+      .set('api_key', this.apiKey)
+      .set('q', tag)
+      .set('limit', '10');
+
+    this.http
+      .get<SearchResponse>(`${this.serviceUrl}/search`, { params })
+      .subscribe((resp) => {
+        this.gifList = resp.data;
+      });
   }
 }
