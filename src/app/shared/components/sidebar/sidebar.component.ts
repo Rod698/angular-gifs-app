@@ -9,7 +9,11 @@ export class SidebarComponent {
 
   constructor(private gifsSercice: GifsService) {}
 
-  get tagsHistory() {
+  get tagsHistory(): string[] {
     return this.gifsSercice.tagHistory;
+  }
+
+  searchTag(tag: string): void {
+    this.gifsSercice.searchTag(tag);
   }
 }
